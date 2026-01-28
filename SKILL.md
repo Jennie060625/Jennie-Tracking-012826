@@ -1,119 +1,97 @@
-<skill_md>
-# Skills Demonstrated
+# Antigravity Agentic AI — WOW Workspace（SKILL）
 
-## System Architecture & Design
+本專案是一個部署於 Hugging Face Spaces 的 Streamlit 系統，整合多家 LLM（OpenAI / Gemini / Anthropic / Grok），並提供「多 Agent 串接」、「可編輯輸出再傳遞」、「AI Note Keeper」與「WOW UI（主題/語言/畫家風格）」等能力。
 
-### 1. Multi-Agent System Architecture
-Designs a comprehensive multi-agent system with 31 specialized agents, each with distinct roles and responsibilities for FDA 510(k) review processes. This demonstrates advanced system decomposition and separation of concerns.
+---
 
-### 2. Role-Based Agent Specialization
-Assigns specific, well-defined roles to each agent (e.g., search, conversion, analysis, reporting), ensuring each component has a single, clear purpose aligned with regulatory review workflows.
+## 1. 核心能力（保留原功能 + 新增 WOW 功能）
 
-### 3. Configuration-Driven Design
-Implements a YAML-based configuration structure that allows for declarative system setup, making the system maintainable and easily modifiable without code changes.
+### A) WOW UI
+- **Light / Dark 主題模式**
+- **英文 / 繁體中文 UI**
+- **20 種畫家風格（含 Jackpot 隨機）**
+- 視覺風格會影響整體配色、卡片、按鈕與介面氛圍
 
-## AI Model Integration & Management
+### B) 文件輸入（Document Input）
+- 支援上傳：**Text / Markdown / PDF / CSV**
+- PDF：預設抽取第 1 頁文字（可再擴充頁碼範圍）
+- CSV：可轉為 Markdown 預覽（若安裝 pandas）
+- 支援 **關鍵字掃描與高亮**（HTML 預覽）
 
-### 4. Multi-Model Strategy Implementation
-Integrates diverse AI models (GPT-4, Claude, Gemini, Grok) across different agents, demonstrating knowledge of leveraging different models' strengths for specific tasks.
+### C) Agents 串接（Agent Chain）
+- 從 `agents.yaml` 載入 agent 清單
+- 使用者可在執行前針對每個 agent：
+  - 修改 **prompt**
+  - 修改 **max_tokens（預設 12000）**
+  - 選擇 **model**
+  - 調整 **temperature**
+- 每個 agent 執行後：
+  - 可在「文字/Markdown 檢視」查看
+  - 可 **編輯輸出**（text_area）再作為下一個 agent 的輸入（Chain Input）
 
-### 5. Token Budget Management
-Configures `max_tokens` parameters (ranging from 4000 to 12000) for each agent based on task complexity, showing understanding of resource optimization and cost management.
+### D) WOW 狀態指示與儀表板
+- 顯示：已載入文件數、Agent 數、執行次數、最後執行時間
+- 顯示：OpenAI/Gemini/Anthropic/Grok 的 key 狀態（✅/—）
 
-### 6. Model-Task Alignment
-Strategically assigns specific models to appropriate tasks (e.g., Grok for reasoning-intensive comparisons, Claude Sonnet for comprehensive reporting), demonstrating advanced understanding of model capabilities.
+### E) API Key 輸入（安全策略）
+- 若 key 已存在於環境變數（ENV），UI 只顯示「Loaded from environment (hidden)」
+- 若 ENV 沒有，使用者可在網頁輸入（只存於 session，不寫入磁碟）
 
-## Regulatory Domain Expertise
+### F) AI Note Keeper（新功能）
+- 貼上文字/Markdown → 一鍵整理成「組織化 Markdown」
+- 可在 Markdown 或 Text 檢視中自由修改
+- 提供 6 種 AI Magics（可自行擴充）：
+  1. AI Formatting（組織化整理）
+  2. AI Summary（摘要）
+  3. AI Action Items（行動項目）
+  4. AI Flashcards（記憶卡）
+  5. AI Translate（英 ↔ 繁中）
+  6. AI Keywords Highlight（使用者自訂關鍵字與顏色）
 
-### 7. FDA 510(k) Process Expertise
-Demonstrates deep knowledge of FDA 510(k) regulatory pathways, including substantial equivalence analysis, predicate device comparisons, and review requirements.
+---
 
-### 8. ISO Standards Integration
-Incorporates multiple ISO standards (ISO 14971 for risk management, ISO 10993 for biocompatibility, IEC 62304 for software lifecycle) into specialized review agents.
+## 2. 檔案結構（Hugging Face Spaces）
+- `app.py`：主程式（所有 UI/功能整合在單一檔案）
+- `agents.yaml`：Agent 定義（可從 UI 編輯並儲存）
+- `SKILL.md`：本文件
+- `requirements.txt`：依賴套件
 
-### 9. Medical Device Classification Understanding
-Shows expertise in medical device regulatory categories including Software as Medical Device (SaMD), Software in Medical Device (SiMD), and various device classifications.
+---
 
-## Document Processing & Analysis
+## 3. models 支援
+UI 內建可選模型（可依需求增加）：
+- OpenAI：`gpt-4o-mini`, `gpt-4.1-mini`
+- Gemini：`gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-3-flash-preview`
+- Anthropic：`claude-3-5-sonnet-latest`, `claude-3-5-haiku-latest`, `claude-3-opus-latest`
+- Grok：`grok-4-fast-reasoning`, `grok-3-mini`
 
-### 10. PDF-to-Markdown Conversion Pipeline
-Implements a specialized agent for converting unstructured PDF content into structured Markdown while preserving document hierarchy, tables, and formatting.
+---
 
-### 11. Multi-Format Document Handling
-Handles various document types including technical files, clinical data, regulatory submissions, and manufacturing documentation through specialized processing agents.
+## 4. agents.yaml Schema（建議）
+每個 agent 建議欄位：
+- `name`：顯示名稱（唯一）
+- `provider`：`openai|gemini|anthropic|grok`（可省略，系統可用 model 前綴推測）
+- `model`：預設模型（使用者在 UI 可覆寫）
+- `system_prompt`：系統提示詞
+- `prompt`：使用者提示詞模板（支援 `{input}`）
+- `temperature`：溫度
+- `max_tokens`：最大輸出 tokens
 
-### 12. Structured Data Extraction
-Implements entity extraction capabilities that identify and catalog 20+ key entities with contextual information, demonstrating advanced NLP application design.
+---
 
-## Comparative Analysis & Evaluation
+## 5. 典型使用流程（建議）
+1. 上傳 CSV/PDF/Text 作為上下文
+2. 在 Agents 選擇要串接的 agents（例如：資料品質健檢 → KPI 設計 → 視覺化規格）
+3. 使用「逐步模式」：
+   - 先跑第 1 個 agent
+   - 編輯輸出（修正用詞/加上限制/刪除敏感資訊）
+   - 再傳到下一個 agent
+4. 將成果貼進 AI Note Keeper：
+   - 進一步整理、產出行動項或月報模板
 
-### 13. Version Difference Detection
-Creates a sophisticated diff agent capable of identifying 100+ meaningful differences between document versions, focusing on substantive changes rather than cosmetic edits.
+---
 
-### 14. Predicate Device Comparison Framework
-Implements systematic comparison methodology for evaluating substantial equivalence between new devices and predicate devices across multiple dimensions.
-
-### 15. Multi-Dimensional Device Analysis
-Structures comparison across technical characteristics, intended use, indications, performance data, and risk profiles for comprehensive evaluation.
-
-## Risk Management & Safety Assessment
-
-### 16. ISO 14971 Risk Matrix Implementation
-Develops a specialized agent for creating risk matrices that track hazards, harms, initial risks, mitigations, and residual risks in standardized format.
-
-### 17. Cybersecurity Threat Assessment
-Implements dedicated cybersecurity evaluation following FDA guidance, addressing threat modeling, encryption, access control, and patch management.
-
-### 18. Adverse Event Signal Detection
-Creates capability for analyzing post-market surveillance data and adverse events to identify safety signals relevant to regulatory review.
-
-## Quality & Compliance
-
-### 19. Standards Conformity Tracking
-Implements systematic tracking of consensus standards (ISO, IEC, ASTM) with version control and conformity assessment capabilities.
-
-### 20. Checklist-Based Review Methodology
-Generates structured review checklists from regulatory guidance documents, ensuring comprehensive and auditable review processes.
-
-### 21. Quality Management System (QMS) Overview
-Provides high-level manufacturing and quality system analysis focusing on aspects directly relevant to product safety and performance.
-
-## Clinical & Statistical Evaluation
-
-### 22. Clinical Evidence Assessment
-Implements comprehensive clinical data evaluation including study design, endpoints, statistical validity, and evidence strength for regulatory claims.
-
-### 23. Statistical Method Review
-Creates specialized capability for reviewing statistical approaches, sample size calculations, and data presentation integrity in clinical and performance studies.
-
-### 24. Biocompatibility Evaluation Framework
-Applies ISO 10993 standards systematically to assess biological safety based on contact type, duration, and risk profile.
-
-## Technical Assessment Capabilities
-
-### 25. Software Safety Lifecycle Review
-Implements IEC 62304 compliant software review covering architecture, safety classification, verification & validation, and change control.
-
-### 26. Sterilization & Shelf-Life Validation
-Evaluates sterilization methods, validation protocols, packaging integrity, and accelerated aging studies for sterile medical devices.
-
-### 27. Human Factors Engineering (HFE) Assessment
-Incorporates usability and human factors evaluation to identify use errors and assess critical task performance.
-
-## Communication & Documentation
-
-### 28. Multi-Lingual Content Management
-Implements bilingual capability (Traditional Chinese with English terminology preservation) throughout all agents, demonstrating internationalization awareness.
-
-### 29. Stakeholder-Specific Reporting
-Creates differentiated outputs for different audiences: detailed technical reviews for specialists, executive briefs for management, and deficiency letters for sponsors.
-
-### 30. Regulatory Timeline & Milestone Tracking
-Implements systematic tracking of submission milestones, meetings, deficiency responses, and key communications for process management.
-
-## Workflow Automation & Productivity
-
-### 31. AI-Powered Workflow Acceleration ("Magic" Features)
-Develops a suite of quick-action agents for common tasks (formatting, keyword extraction, action items, concept mapping, glossary creation) that enhance reviewer productivity through automated assistance for routine but time-consuming activities.
-
-</skill_md>
+## 6. 注意事項
+- LLM 回答可能會受輸入資料品質影響；務必先做資料品質檢核
+- 涉及合規/醫療器材情境時，請以「不臆測、可稽核」為準則
+- 若要顯示真實 token usage/cost，需要依不同供應商回傳格式額外整合
