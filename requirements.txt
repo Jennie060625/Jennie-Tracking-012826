@@ -10,3 +10,5 @@ PyYAML
 altair
 httpx
 python-docx
+PyPDF2
+tabulate
