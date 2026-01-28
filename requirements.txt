@@ -12,3 +12,5 @@ httpx
 python-docx
 PyPDF2
 tabulate
+plotly
+streamlit-agraph
